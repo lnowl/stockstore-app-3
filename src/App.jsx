@@ -217,7 +217,7 @@ export default function App() {
               <p className="text-gray-400 text-sm">ผู้จัดหา: {p.supplier}</p>
 
               <div className="flex gap-2 mt-2">
-                <button onClick={() => addToCart(p)} className="px-2 py-1 bg-purple-600 text-white rounded text-sm hover:bg-purple-500 transition">เพิ่มใบเสนอราคา</button>
+                <button onClick={() => addToCart(p)} className="px-2 py-1 bg-[#262C36] text-white rounded text-sm hover:bg-[#313740] transition">เพิ่มใบเสนอราคา</button>
                 <button onClick={() => handleEditProduct(p)} className="px-2 py-1 bg-yellow-500 text-white rounded text-sm hover:bg-blue-500 transition">แก้ไข</button>
                 <button onClick={() => handleDeleteProduct(p.id)} className="px-2 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-500 transition">ลบ</button>
               </div>
@@ -275,7 +275,7 @@ function CartModal({ cart, removeFromCart, setShowCart, exportQuotationPDF, cart
 
         <div className="flex justify-between items-center" mt-4>
           <p className="text-white font-bold">รวมทั้งหมด: {cartTotal.toLocaleString()} บาท</p>
-          <button onClick={exportQuotationPDF} className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-500 transition">
+          <button onClick={exportQuotationPDF} className="px-3 py-2 bg-[#262C36] text-white rounded hover:bg-[#313740] transition">
             Export ใบเสนอราคา
           </button>
         </div>
