@@ -149,7 +149,7 @@ export default function App() {
             <p className="text-gray-400 text-sm">จัดการสต๊อก เหล็ก · ท่อ PVC · สายไฟ</p>
           </div>
           <div className="flex items-center gap-3 mt-3 md:mt-0">
-            <button onClick={() => setShowCart(true)} className="px-3 py-2 bg-purple-600 text-white rounded shadow-sm text-sm hover:bg-purple-500 transition flex items-center gap-2">
+            <button onClick={() => setShowCart(true)} className="px-3 py-2 bg-gray-600 text-white rounded shadow-sm text-sm hover:bg-gray-500 transition flex items-center gap-2">
               <FaShoppingCart /> ใบเสนอราคา ({cart.length})
             </button>
             <button onClick={() => { resetAdminForm(); setShowAdmin(true); }} className="px-3 py-2 bg-blue-600 text-white rounded shadow-sm text-sm hover:bg-blue-500 transition">เพิ่มสินค้า</button>
