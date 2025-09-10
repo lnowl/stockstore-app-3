@@ -255,11 +255,11 @@ function CartModal({ cart, removeFromCart, setShowCart, exportQuotationPDF, cart
             <tbody>
               {cart.map(item => (
                 <tr key={item.id} className="border-b border-gray-700">
-                  <td className="py-2">{c.name}</td>
-                  <td>{c.qty} {c.unit}</td>
-                  <td>{c.price.toLocaleString()} บาท</td>
-                  <td>{(c.price * c.qty).toLocaleString()} บาท</td>
-                  <td>
+                  <td className="py-2">{item.name}</td>
+                  <td className="py-2">{item.qty} {item.unit}</td>
+                  <td className="py-2">{item.price.toLocaleString()} บาท</td>
+                  <td className="py-2">{(item.price * item.qty).toLocaleString()} บาท</td>
+                  <td className="py-2">
                     <button onClick={() => removeFromCart(item.id)} className="text-red-500 hover:text-red-400">
                       <FaTrash />
                     </button>
@@ -270,16 +270,17 @@ function CartModal({ cart, removeFromCart, setShowCart, exportQuotationPDF, cart
           </table>
         )}
 
-        <div className="flex justify-between items-center mt-4">
-          <p className="text-lg font-bold text-white">รวมทั้งหมด: {cartTotal.toLocaleString()} บาท</p>
+        <div className="flex justify-between items-center" mt-4>
+          <p className="text-white font-bold">รวมทั้งหมด: {cartTotal.toLocaleString()} บาท</p>
           <button onClick={exportQuotationPDF} className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-500 transition">
-            Export PDF
+            Export ใบเสนอราคา
           </button>
         </div>
       </div>
     </div>
   );
 }
+
 
 
 function AdminModal({ newProduct, setNewProduct, handleAddOrUpdateProduct, handleCancelAdmin, editingProduct }) {
