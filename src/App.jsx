@@ -53,40 +53,56 @@ export default function App() {
   
   function exportQuotationPDF(cart, cartTotal) {
   const doc = new jsPDF();
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const margin = 10;
+  let startY = 25;
+  const lineHeight = 8;
 
   // หัวเรื่อง
-  doc.setFontSize(14);
-  doc.text("ใบเสนอราคา", 105, 15, { align: "center" });
+  doc.setFontSize(16);
+  doc.text("ใบเสนอราคา", pageWidth / 2, 15, { align: "center" });
 
-  // ตารางสินค้า
+  // ตาราง header
   doc.setFontSize(11);
-  let startY = 25;
+  doc.setFillColor(220, 220, 220); // สีพื้น header
+  doc.rect(margin, startY, pageWidth - 2 * margin, lineHeight, "F"); // วาด background
+  doc.setTextColor(0);
+  doc.text("สินค้า", 12, startY + 6);
+  doc.text("SKU", 65, startY + 6);
+  doc.text("จำนวน", 105, startY + 6);
+  doc.text("หน่วย", 125, startY + 6);
+  doc.text("ราคา/หน่วย", 145, startY + 6);
+  doc.text("รวม", 185, startY + 6);
 
-  doc.text("สินค้า", 10, startY);
-  doc.text("SKU", 60, startY);
-  doc.text("จำนวน", 100, startY);
-  doc.text("หน่วย", 120, startY);
-  doc.text("ราคา/หน่วย", 140, startY);
-  doc.text("รวม", 180, startY);
+  startY += lineHeight;
 
-  startY += 6;
-
+  // ตาราง body
   cart.forEach(item => {
-    doc.text(item.name, 10, startY);
-    doc.text(item.sku, 60, startY);
-    doc.text(String(item.qty), 100, startY);
-    doc.text(item.unit, 120, startY);
-    doc.text(item.price.toLocaleString(), 140, startY);
-    doc.text((item.price * item.qty).toLocaleString(), 180, startY);
-    startY += 6;
+    doc.rect(margin, startY, pageWidth - 2 * margin, lineHeight); // เส้นกรอบแต่ละบรรทัด
+    doc.text(item.name, 12, startY + 6);
+    doc.text(item.sku, 65, startY + 6);
+    doc.text(String(item.qty), 105, startY + 6);
+    doc.text(item.unit, 125, startY + 6);
+    doc.text(item.price.toLocaleString(), 145, startY + 6);
+    doc.text((item.price * item.qty).toLocaleString(), 185, startY + 6);
+    startY += lineHeight;
+
+    // ถ้าเกินหน้า ให้เพิ่มหน้าใหม่
+    if (startY + lineHeight > doc.internal.pageSize.getHeight() - 20) {
+      doc.addPage();
+      startY = 25;
+    }
   });
 
+  // รวมทั้งหมด
   startY += 4;
-  doc.text(`รวมทั้งหมด: ${cartTotal.toLocaleString()} บาท`, 10, startY);
+  doc.setFontSize(12);
+  doc.text(`รวมทั้งหมด: ${cartTotal.toLocaleString()} บาท`, margin, startY + 6);
 
   // บันทึกไฟล์ PDF
   doc.save("quotation.pdf");
 }
+
 
   
   function resetAdminForm() {
