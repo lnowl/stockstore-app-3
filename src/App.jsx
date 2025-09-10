@@ -233,11 +233,12 @@ export default function App() {
 function CartModal({ cart, removeFromCart, setShowCart, exportQuotationPDF, cartTotal }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-gray-900 p-6 rounded shadow-lg w-full max-w-lg" style={{ backgroundColor: '#0D1117' }}>
+      <div className="bg-gray-900 p-6 rounded shadow-lg w-full max-w-2xl" style={{ backgroundColor: '#0D1117' }}>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-white">ใบเสนอราคา</h2>
-          <button onClick={() => setShowCart(false)} className="text-gray-400 hover:text-white">✕</button>
-        </div>
+          <h2 className="text-xl font-bold mb-4 text-white flex justify-between items-center">
+                ใบเสนอราคา
+                <button onClick={() => setShowCart(false)} className="text-gray-400 hover:text-white">✕</button>
+              </h2>
 
         {cart.length === 0 ? (
           <p className="text-gray-400">ยังไม่มีสินค้าในใบเสนอราคา</p>
