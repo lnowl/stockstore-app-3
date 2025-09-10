@@ -256,10 +256,10 @@ function CartModal({ cart, removeFromCart, setShowCart, exportQuotationPDF, cart
               {cart.map(item => (
                 <tr key={item.id} className="border-b border-gray-700">
                   <td className="py-2">{item.name}</td>
-                  <td className="py-2">{item.qty} {item.unit}</td>
-                  <td className="py-2">{item.price.toLocaleString()} บาท</td>
-                  <td className="py-2">{(item.price * item.qty).toLocaleString()} บาท</td>
-                  <td className="py-2">
+                  <td>{item.qty} {item.unit}</td>
+                  <td>{item.price.toLocaleString()} บาท</td>
+                  <td>{(item.price * item.qty).toLocaleString()} บาท</td>
+                  <td>
                     <button onClick={() => removeFromCart(item.id)} className="text-red-500 hover:text-red-400">
                       <FaTrash />
                     </button>
