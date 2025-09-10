@@ -51,36 +51,70 @@ export default function App() {
     setCart(prev => prev.filter(i => i.id !== id));
   }
 
-  function exportQuotationPDF() {
-    const doc = new jsPDF();
-    doc.setFontSize(14);
-    doc.text("ใบเสนอราคา", 105, 15, { align: "center" });
-    doc.setFontSize(11);
-    let startY = 25;
+  export function exportQuotationPDF(cart) {
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const pageWidth = doc.internal.pageSize.getWidth();
 
-    doc.text("สินค้า", 10, startY);
-    doc.text("SKU", 60, startY);
-    doc.text("จำนวน", 100, startY);
-    doc.text("หน่วย", 120, startY);
-    doc.text("ราคา/หน่วย", 140, startY);
-    doc.text("รวม", 180, startY);
-    startY += 6;
+  // --- เพิ่มฟอนต์ไทย Sarabun ---
+  doc.addFileToVFS("Sarabun-Regular.ttf", sarabunRegular);
+  doc.addFont("Sarabun-Regular.ttf", "Sarabun", "normal");
+  doc.addFileToVFS("Sarabun-Bold.ttf", sarabunBold);
+  doc.addFont("Sarabun-Bold.ttf", "Sarabun", "bold");
+  doc.setFont("Sarabun", "normal");
 
-    cart.forEach(item => {
-      doc.text(item.name, 10, startY);
-      doc.text(item.sku, 60, startY);
-      doc.text(String(item.qty), 100, startY);
-      doc.text(item.unit, 120, startY);
-      doc.text(item.price.toLocaleString(), 140, startY);
-      doc.text((item.price * item.qty).toLocaleString(), 180, startY);
-      startY += 6;
-    });
+  // --- โลโก้ ---
+  const logoUrl = "https://yourdomain.com/logo.png"; // เปลี่ยนเป็น URL โลโก้จริง
+  const imgWidth = 40;
+  const imgHeight = 20;
+  doc.addImage(logoUrl, "PNG", 10, 10, imgWidth, imgHeight);
 
-    startY += 4;
-    doc.text(`รวมทั้งหมด: ${cartTotal.toLocaleString()} บาท`, 10, startY);
-    doc.save("quotation.pdf");
-  }
+  // --- หัวเรื่อง ---
+  doc.setFont("Sarabun", "bold");
+  doc.setFontSize(18);
+  doc.text("ใบเสนอราคา", pageWidth / 2, 20, { align: "center" });
 
+  doc.setFont("Sarabun", "normal");
+  doc.setFontSize(11);
+  doc.text(`วันที่: ${new Date().toLocaleDateString()}`, pageWidth - 10, 30, { align: "right" });
+
+  // --- ตารางสินค้า ---
+  const tableColumn = ["สินค้า", "SKU", "จำนวน", "หน่วย", "ราคา/หน่วย", "รวม"];
+  const tableRows = cart.map(item => [
+    item.name,
+    item.sku,
+    item.qty,
+    item.unit,
+    item.price.toLocaleString(),
+    (item.price * item.qty).toLocaleString()
+  ]);
+
+  doc.autoTable({
+    head: [tableColumn],
+    body: tableRows,
+    startY: 40,
+    theme: "grid",
+    headStyles: { fillColor: [41, 128, 185], textColor: 255, font: "Sarabun", fontStyle: "bold" },
+    styles: { font: "Sarabun", fontSize: 10 },
+    columnStyles: {
+      0: { cellWidth: 60 },
+      1: { cellWidth: 30 },
+      2: { cellWidth: 20, halign: "right" },
+      3: { cellWidth: 20, halign: "center" },
+      4: { cellWidth: 30, halign: "right" },
+      5: { cellWidth: 30, halign: "right" }
+    }
+  });
+
+  // --- รวมทั้งหมด ---
+  const cartTotal = cart.reduce((acc, c) => acc + c.price * c.qty, 0);
+  const finalY = doc.lastAutoTable.finalY + 10;
+  doc.setFont("Sarabun", "bold");
+  doc.setFontSize(12);
+  doc.text(`รวมทั้งหมด: ${cartTotal.toLocaleString()} บาท`, pageWidth - 10, finalY, { align: "right" });
+
+  // --- บันทึกไฟล์ PDF ---
+  doc.save("quotation.pdf");
+}
   function resetAdminForm() {
     setNewProduct({ name: '', category: '', sku: '', price: '', stock: '', unit: '', supplier: '' });
     setEditingProduct(null);
