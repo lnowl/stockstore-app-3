@@ -51,10 +51,7 @@ export default function App() {
     setCart(prev => prev.filter(i => i.id !== id));
   }
 
-  import jsPDF from "jspdf";
-import "jspdf-autotable";
-
-function exportQuotationPDF() {
+  function exportQuotationPDF() {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
 
@@ -125,6 +122,7 @@ function exportQuotationPDF() {
 
   doc.save("quotation.pdf");
 }
+
 
 
   
