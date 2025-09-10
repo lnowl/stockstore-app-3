@@ -51,35 +51,80 @@ export default function App() {
     setCart(prev => prev.filter(i => i.id !== id));
   }
 
-  function exportQuotationPDF() {
-    const doc = new jsPDF();
-    doc.setFontSize(14);
-    doc.text("ใบเสนอราคา", 105, 15, { align: "center" });
-    doc.setFontSize(11);
-    let startY = 25;
+  import jsPDF from "jspdf";
+import "jspdf-autotable";
 
-    doc.text("สินค้า", 10, startY);
-    doc.text("SKU", 60, startY);
-    doc.text("จำนวน", 100, startY);
-    doc.text("หน่วย", 120, startY);
-    doc.text("ราคา/หน่วย", 140, startY);
-    doc.text("รวม", 180, startY);
-    startY += 6;
+function exportQuotationPDF() {
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const pageWidth = doc.internal.pageSize.getWidth();
 
-    cart.forEach(item => {
-      doc.text(item.name, 10, startY);
-      doc.text(item.sku, 60, startY);
-      doc.text(String(item.qty), 100, startY);
-      doc.text(item.unit, 120, startY);
-      doc.text(item.price.toLocaleString(), 140, startY);
-      doc.text((item.price * item.qty).toLocaleString(), 180, startY);
-      startY += 6;
-    });
+  // --- ใส่โลโก้ด้านบนซ้าย ---
+  const logoUrl = "https://treebyte.com/wp-content/uploads/2023/10/Risorsa-1.png"; // เปลี่ยนเป็นโลโก้จริง
+  const imgWidth = 40;
+  const imgHeight = 20;
+  doc.addImage(logoUrl, "PNG", 10, 10, imgWidth, imgHeight);
 
-    startY += 4;
-    doc.text(`รวมทั้งหมด: ${cartTotal.toLocaleString()} บาท`, 10, startY);
-    doc.save("quotation.pdf");
-  }
+  // --- หัวเรื่อง ---
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(18);
+  doc.text("ใบเสนอราคา / Quotation", pageWidth / 2, 20, { align: "center" });
+
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "normal");
+  doc.text(`วันที่: ${new Date().toLocaleDateString()}`, pageWidth - 60, 30);
+
+  // --- เตรียมข้อมูลตาราง ---
+  const tableColumn = ["สินค้า", "SKU", "จำนวน", "หน่วย", "ราคา/หน่วย", "รวม"];
+  const tableRows = cart.map(item => [
+    item.name,
+    item.sku,
+    item.qty,
+    item.unit,
+    item.price.toLocaleString(),
+    (item.price * item.qty).toLocaleString()
+  ]);
+
+  // --- สร้างตารางด้วย autoTable ---
+  doc.autoTable({
+    head: [tableColumn],
+    body: tableRows,
+    startY: 40,
+    theme: "grid",
+    headStyles: { fillColor: [41, 128, 185], textColor: 255, fontStyle: "bold" },
+    styles: { font: "helvetica", fontSize: 10 },
+    columnStyles: {
+      0: { cellWidth: 60 },
+      1: { cellWidth: 30 },
+      2: { cellWidth: 20, halign: "right" },
+      3: { cellWidth: 20, halign: "center" },
+      4: { cellWidth: 30, halign: "right" },
+      5: { cellWidth: 30, halign: "right" }
+    }
+  });
+
+  // --- คำนวณยอดรวม ---
+  const subtotal = cart.reduce((acc, c) => acc + c.price * c.qty, 0);
+  const vat = subtotal * 0.07;
+  const total = subtotal + vat;
+
+  const finalY = doc.lastAutoTable.finalY + 10;
+
+  doc.setFont("helvetica", "bold");
+  doc.text(`รวม (Subtotal): ${subtotal.toLocaleString()} บาท`, pageWidth - 60, finalY);
+  doc.text(`VAT 7%: ${vat.toLocaleString()} บาท`, pageWidth - 60, finalY + 6);
+  doc.text(`รวมสุทธิ: ${total.toLocaleString()} บาท`, pageWidth - 60, finalY + 12);
+
+  // --- หมายเหตุ ---
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  doc.text(
+    "หมายเหตุ: ราคานี้ยังไม่รวมค่าขนส่ง และอาจเปลี่ยนแปลงตามสต๊อกและโปรโมชั่น",
+    10,
+    finalY + 25
+  );
+
+  doc.save("quotation.pdf");
+}
 
 
   
