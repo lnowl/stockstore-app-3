@@ -156,7 +156,7 @@ export default function App() {
 
         {/* Dashboard */}
         {showDashboard && (
-          <div className="bg-gray-900 p-4 rounded shadow mb-6">
+          <div className="bg-gray-900 p-4 rounded shadow mb-6" style={{ backgroundColor: '#151B23' }}>
             <h2 className="text-xl font-bold mb-3 text-white">Dashboard สรุปสต๊อก</h2>
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
               <div className="p-3 rounded flex items-center gap-2 bg-[#262C36]">
@@ -214,8 +214,8 @@ export default function App() {
               <p className="text-gray-400 text-sm">ผู้จัดหา: {p.supplier}</p>
 
               <div className="flex gap-2 mt-2">
-                <button onClick={() => addToCart(p)} className="px-2 py-1 bg-purple-600 text-white rounded text-sm hover:bg-purple-500 transition">เพิ่มไปใบเสนอราคา</button>
-                <button onClick={() => handleEditProduct(p)} className="px-2 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-500 transition">แก้ไข</button>
+                <button onClick={() => addToCart(p)} className="px-2 py-1 bg-purple-600 text-white rounded text-sm hover:bg-purple-500 transition">เพิ่มใบเสนอราคา</button>
+                <button onClick={() => handleEditProduct(p)} className="px-2 py-1 bg-yellow-500 text-white rounded text-sm hover:bg-blue-500 transition">แก้ไข</button>
                 <button onClick={() => handleDeleteProduct(p.id)} className="px-2 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-500 transition">ลบ</button>
               </div>
             </div>
@@ -233,31 +233,33 @@ export default function App() {
 function CartModal({ cart, removeFromCart, setShowCart, exportQuotationPDF, cartTotal }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-gray-900 p-6 rounded shadow-lg w-full max-w-2xl">
-        <h2 className="text-xl font-bold text-white mb-4">ใบเสนอราคา</h2>
+      <div className="bg-gray-900 p-6 rounded shadow-lg w-full max-w-lg" style={{ backgroundColor: '#0D1117' }}>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold text-white">ใบเสนอราคา</h2>
+          <button onClick={() => setShowCart(false)} className="text-gray-400 hover:text-white">✕</button>
+        </div>
+
         {cart.length === 0 ? (
           <p className="text-gray-400">ยังไม่มีสินค้าในใบเสนอราคา</p>
         ) : (
-          <table className="w-full text-left text-white">
+          <table className="w-full text-left text-white mb-4">
             <thead>
-              <tr>
-                <th>สินค้า</th>
-                <th>SKU</th>
-                <th>จำนวน</th>
-                <th>ราคา/หน่วย</th>
-                <th>รวม</th>
-                <th>ลบ</th>
+              <tr className="border-b border-gray-700">
+                <th className="py-2">สินค้า</th>
+                <th className="py-2">จำนวน</th>
+                <th className="py-2">ราคา/หน่วย</th>
+                <th className="py-2">รวม</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               {cart.map(item => (
-                <tr key={item.id}>
-                  <td>{item.name}</td>
-                  <td>{item.sku}</td>
-                  <td>{item.qty}</td>
-                  <td>{item.price.toLocaleString()}</td>
-                  <td>{(item.price * item.qty).toLocaleString()}</td>
-                  <td>
+                <tr key={item.id} className="border-b border-gray-700">
+                  <td className="py-2">{item.name}</td>
+                  <td className="py-2">{item.qty} {item.unit}</td>
+                  <td className="py-2">{item.price.toLocaleString()} บาท</td>
+                  <td className="py-2">{(item.price * item.qty).toLocaleString()} บาท</td>
+                  <td className="py-2">
                     <button onClick={() => removeFromCart(item.id)} className="text-red-500 hover:text-red-400">
                       <FaTrash />
                     </button>
@@ -267,17 +269,18 @@ function CartModal({ cart, removeFromCart, setShowCart, exportQuotationPDF, cart
             </tbody>
           </table>
         )}
-        <div className="mt-4 flex justify-between items-center">
+
+        <div className="flex justify-between items-center">
           <p className="text-white font-bold">รวมทั้งหมด: {cartTotal.toLocaleString()} บาท</p>
-          <div className="flex gap-2">
-            <button onClick={exportQuotationPDF} className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-500 transition">Export PDF</button>
-            <button onClick={() => setShowCart(false)} className="px-3 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 transition">ปิด</button>
-          </div>
+          <button onClick={exportQuotationPDF} className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-500 transition">
+            Export PDF
+          </button>
         </div>
       </div>
     </div>
   );
 }
+
 
 function AdminModal({ newProduct, setNewProduct, handleAddOrUpdateProduct, handleCancelAdmin, editingProduct }) {
   return (
