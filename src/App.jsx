@@ -52,78 +52,35 @@ export default function App() {
   }
 
   function exportQuotationPDF() {
-  const doc = new jsPDF({ orientation: "p", unit: "mm", format: "a4" });
-  const pageWidth = doc.internal.pageSize.getWidth();
+    const doc = new jsPDF();
+    doc.setFontSize(14);
+    doc.text("ใบเสนอราคา", 105, 15, { align: "center" });
+    doc.setFontSize(11);
+    let startY = 25;
 
-  // --- ใส่โลโก้ด้านบน (ใช้ URL ของรูป) ---
-  const logoUrl = "https://yourdomain.com/logo.png"; // เปลี่ยนเป็น URL โลโก้จริง
-  const imgWidth = 40;
-  const imgHeight = 20;
-  doc.addImage(logoUrl, "PNG", 10, 10, imgWidth, imgHeight);
+    doc.text("สินค้า", 10, startY);
+    doc.text("SKU", 60, startY);
+    doc.text("จำนวน", 100, startY);
+    doc.text("หน่วย", 120, startY);
+    doc.text("ราคา/หน่วย", 140, startY);
+    doc.text("รวม", 180, startY);
+    startY += 6;
 
-  // --- หัวเรื่องใบเสนอราคา ---
-  doc.setFontSize(18);
-  doc.setFont("helvetica", "bold");
-  doc.text("ใบเสนอราคา / Quotation", pageWidth / 2, 20, { align: "center" });
-
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "normal");
-  doc.text(`วันที่: ${new Date().toLocaleDateString()}`, pageWidth - 60, 30);
-
-  // --- ตารางสินค้า ---
-  const tableColumn = ["สินค้า", "SKU", "จำนวน", "หน่วย", "ราคา/หน่วย", "รวม"];
-  const startX = 10;
-  let startY = 40;
-  const rowHeight = 8;
-
-  // หัวตาราง
-  doc.setFillColor(41, 128, 185); // สีน้ำเงินเข้ม
-  doc.setTextColor(255, 255, 255);
-  tableColumn.forEach((col, i) => {
-    const x = startX + [0, 50, 90, 110, 140, 170][i];
-    doc.rect(x - 1, startY - 6, i === 5 ? 30 : [50, 40, 20, 30, 30, 30][i], rowHeight, "F");
-    doc.text(col, x + 1, startY);
-  });
-
-  // --- เนื้อหาตาราง ---
-  startY += rowHeight;
-  doc.setTextColor(0, 0, 0);
-  cart.forEach(item => {
-    const colData = [
-      item.name,
-      item.sku,
-      item.qty.toString(),
-      item.unit,
-      item.price.toLocaleString(),
-      (item.price * item.qty).toLocaleString(),
-    ];
-
-    colData.forEach((text, i) => {
-      const x = startX + [0, 50, 90, 110, 140, 170][i];
-      doc.text(text, x + 1, startY);
+    cart.forEach(item => {
+      doc.text(item.name, 10, startY);
+      doc.text(item.sku, 60, startY);
+      doc.text(String(item.qty), 100, startY);
+      doc.text(item.unit, 120, startY);
+      doc.text(item.price.toLocaleString(), 140, startY);
+      doc.text((item.price * item.qty).toLocaleString(), 180, startY);
+      startY += 6;
     });
 
-    startY += rowHeight;
-  });
+    startY += 4;
+    doc.text(`รวมทั้งหมด: ${cartTotal.toLocaleString()} บาท`, 10, startY);
+    doc.save("quotation.pdf");
+  }
 
-  // --- รวมทั้งหมด ---
-  startY += 4;
-  doc.setFont("helvetica", "bold");
-  doc.text(`รวมทั้งหมด: ${cartTotal.toLocaleString()} บาท`, startX, startY);
-
-  // --- หมายเหตุ ---
-  startY += 10;
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  doc.text(
-    "หมายเหตุ: ราคานี้ไม่รวมภาษีมูลค่าเพิ่ม 7%. ราคาสินค้าอาจเปลี่ยนแปลงตามสต๊อกและโปรโมชั่น.",
-    startX,
-    startY
-  );
-
-  // --- เซฟ PDF ---
-  doc.save("quotation.pdf");
-}
 
   
   function resetAdminForm() {
