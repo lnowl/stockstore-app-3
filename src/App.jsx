@@ -51,7 +51,7 @@ export default function App() {
     setCart(prev => prev.filter(i => i.id !== id));
   }
 
-unction exportQuotationPDF() {
+  function exportQuotationPDF() {
   const doc = new jsPDF({ orientation: "p", unit: "mm", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
 
