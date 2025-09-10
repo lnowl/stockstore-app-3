@@ -242,9 +242,9 @@ function CartModal({ cart, removeFromCart, setShowCart, exportQuotationPDF, cart
         {cart.length === 0 ? (
           <p className="text-gray-400">ยังไม่มีสินค้าในใบเสนอราคา</p>
         ) : (
-          <table className="w-full text-left text-white mb-4">
+          <table className="w-full text-sm text-gray-300 mb-4">
             <thead>
-              <tr className="border-b border-gray-700">
+              <tr className="text-left border-b border-gray-700">
                 <th className="py-2">สินค้า</th>
                 <th className="py-2">จำนวน</th>
                 <th className="py-2">ราคา/หน่วย</th>
@@ -255,11 +255,11 @@ function CartModal({ cart, removeFromCart, setShowCart, exportQuotationPDF, cart
             <tbody>
               {cart.map(item => (
                 <tr key={item.id} className="border-b border-gray-700">
-                  <td className="py-2">{item.name}</td>
-                  <td className="py-2">{item.qty} {item.unit}</td>
-                  <td className="py-2">{item.price.toLocaleString()} บาท</td>
-                  <td className="py-2">{(item.price * item.qty).toLocaleString()} บาท</td>
-                  <td className="py-2">
+                  <td className="py-2">{c.name}</td>
+                  <td>{c.qty} {c.unit}</td>
+                  <td>{c.price.toLocaleString()} บาท</td>
+                  <td>{(c.price * c.qty).toLocaleString()} บาท</td>
+                  <td>
                     <button onClick={() => removeFromCart(item.id)} className="text-red-500 hover:text-red-400">
                       <FaTrash />
                     </button>
@@ -270,9 +270,9 @@ function CartModal({ cart, removeFromCart, setShowCart, exportQuotationPDF, cart
           </table>
         )}
 
-        <div className="flex justify-between items-center">
-          <p className="text-white font-bold">รวมทั้งหมด: {cartTotal.toLocaleString()} บาท</p>
-          <button onClick={exportQuotationPDF} className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-500 transition">
+        <div className="flex justify-between items-center mt-4">
+          <p className="text-lg font-bold text-white">รวมทั้งหมด: {cartTotal.toLocaleString()} บาท</p>
+          <button onClick={exportQuotationPDF} className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-500 transition">
             Export PDF
           </button>
         </div>
