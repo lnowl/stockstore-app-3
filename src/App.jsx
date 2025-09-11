@@ -55,18 +55,26 @@ export default function App() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
-  // หัวเอกสาร
-  doc.setFontSize(14);
-  doc.text("ใบเสนอราคา", 105, 15, { align: "center" });
+  // ===== หัวเอกสาร =====
+  doc.setFontSize(16);
+  doc.text("ใบเสนอราคา (QUOTATION)", 105, 15, { align: "center" });
 
   doc.setFontSize(11);
+  doc.text(`เลขที่ใบเสนอราคา : _________`, 14, 30);
+  doc.text(`วันที่ : ____ / ____ / ______`, 150, 30);
 
-  // สร้างตารางสินค้า
-  const tableColumn = ["สินค้า", "SKU", "จำนวน", "หน่วย", "ราคา/หน่วย", "รวม"];
+  doc.text(`ชื่อลูกค้า / บริษัท : ____________________________`, 14, 40);
+  doc.text(`ที่อยู่ : ______________________________________`, 14, 50);
+  doc.text(`เบอร์โทรศัพท์ : _______________`, 14, 60);
+  doc.text(`อีเมล : _______________`, 120, 60);
+
+  // ===== ตารางสินค้า =====
+  const tableColumn = ["ลำดับ", "สินค้า", "SKU", "จำนวน", "หน่วย", "ราคา/หน่วย", "รวม"];
   const tableRows = [];
 
-  cart.forEach(item => {
+  cart.forEach((item, index) => {
     const rowData = [
+      index + 1,
       item.name,
       item.sku,
       item.qty,
@@ -80,21 +88,48 @@ export default function App() {
   doc.autoTable({
     head: [tableColumn],
     body: tableRows,
-    startY: 25,
+    startY: 75,
     styles: { fontSize: 10, halign: "center" },
-    headStyles: { fillColor: [220, 220, 220] }, // สีหัวตารางเทาอ่อน
+    headStyles: { fillColor: [220, 220, 220] },
+    columnStyles: {
+      1: { halign: "left" }, // รายการสินค้า ชิดซ้าย
+    }
   });
 
-  // รวมทั้งหมด
+  // ===== สรุปราคา =====
   let finalY = doc.lastAutoTable.finalY + 10;
-  doc.setFontSize(12);
-  doc.text(`รวมทั้งหมด: ${cartTotal.toLocaleString()} บาท`, 140, finalY);
+  doc.text(`ราคารวม : __________________ บาท`, 140, finalY);
+  finalY += 6;
+  doc.text(`ภาษีมูลค่าเพิ่ม (7%) : __________________ บาท`, 140, finalY);
+  finalY += 6;
+  doc.text(`ราคารวมสุทธิ : __________________ บาท`, 140, finalY);
 
-  // บันทึกไฟล์ PDF
+  // ===== เงื่อนไข =====
+  finalY += 15;
+  doc.setFontSize(11);
+  doc.text("เงื่อนไขการชำระเงิน", 14, finalY);
+  finalY += 6;
+  doc.text("- การชำระเงิน : ________________________________", 20, finalY);
+  finalY += 6;
+  doc.text("- ระยะเวลาการส่งมอบ : __________________________", 20, finalY);
+
+  // ===== ผู้เสนอราคา =====
+  finalY += 20;
+  doc.text("ผู้เสนอราคา", 14, finalY);
+  finalY += 10;
+  doc.text("ชื่อ-นามสกุล : __________________________", 20, finalY);
+  finalY += 6;
+  doc.text("ตำแหน่ง : __________________________", 20, finalY);
+  finalY += 6;
+  doc.text("เบอร์โทรศัพท์ : __________________________", 20, finalY);
+  finalY += 6;
+  doc.text("อีเมล : __________________________", 20, finalY);
+  finalY += 6;
+  doc.text("ลายเซ็น : __________________________", 20, finalY);
+
+  // ===== บันทึกไฟล์ =====
   doc.save("quotation.pdf");
 }
-
-
 
   
   function resetAdminForm() {
