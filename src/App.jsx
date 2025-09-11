@@ -52,34 +52,47 @@ export default function App() {
   }
   
   function exportQuotationPDF() {
-    const doc = new jsPDF();
-    doc.setFontSize(14);
-    doc.text("ใบเสนอราคา", 105, 15, { align: "center" });
-    doc.setFontSize(11);
-    let startY = 25;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
 
-    doc.text("สินค้า", 10, startY);
-    doc.text("SKU", 60, startY);
-    doc.text("จำนวน", 100, startY);
-    doc.text("หน่วย", 120, startY);
-    doc.text("ราคา/หน่วย", 140, startY);
-    doc.text("รวม", 180, startY);
-    startY += 6;
+  // หัวเอกสาร
+  doc.setFontSize(14);
+  doc.text("ใบเสนอราคา", 105, 15, { align: "center" });
 
-    cart.forEach(item => {
-      doc.text(item.name, 10, startY);
-      doc.text(item.sku, 60, startY);
-      doc.text(String(item.qty), 100, startY);
-      doc.text(item.unit, 120, startY);
-      doc.text(item.price.toLocaleString(), 140, startY);
-      doc.text((item.price * item.qty).toLocaleString(), 180, startY);
-      startY += 6;
-    });
+  doc.setFontSize(11);
 
-    startY += 4;
-    doc.text(`รวมทั้งหมด: ${cartTotal.toLocaleString()} บาท`, 10, startY);
-    doc.save("quotation.pdf");
-  }
+  // สร้างตารางสินค้า
+  const tableColumn = ["สินค้า", "SKU", "จำนวน", "หน่วย", "ราคา/หน่วย", "รวม"];
+  const tableRows = [];
+
+  cart.forEach(item => {
+    const rowData = [
+      item.name,
+      item.sku,
+      item.qty,
+      item.unit,
+      item.price.toLocaleString(),
+      (item.price * item.qty).toLocaleString()
+    ];
+    tableRows.push(rowData);
+  });
+
+  doc.autoTable({
+    head: [tableColumn],
+    body: tableRows,
+    startY: 25,
+    styles: { fontSize: 10, halign: "center" },
+    headStyles: { fillColor: [220, 220, 220] }, // สีหัวตารางเทาอ่อน
+  });
+
+  // รวมทั้งหมด
+  let finalY = doc.lastAutoTable.finalY + 10;
+  doc.setFontSize(12);
+  doc.text(`รวมทั้งหมด: ${cartTotal.toLocaleString()} บาท`, 140, finalY);
+
+  // บันทึกไฟล์ PDF
+  doc.save("quotation.pdf");
+}
 
 
 
