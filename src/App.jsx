@@ -53,10 +53,9 @@ export default function App() {
   }
   
   function exportQuotationPDF() {
-  const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
-  // ✅ ตั้งค่าฟอนต์เริ่มต้นเป็น Sarabun
+  // ✅ ใช้ฟอนต์ Sarabun ที่ include จาก sarabun-normal.js
   doc.setFont("Sarabun", "normal");
 
   // ===== หัวเอกสาร =====
@@ -75,38 +74,49 @@ export default function App() {
   doc.text("อีเมล : _______________", 120, 60);
 
   // ===== ตารางสินค้า =====
-  const tableColumn = ["ลำดับ", "สินค้า", "SKU", "จำนวน", "หน่วย", "ราคา/หน่วย", "รวม"];
-  const tableRows = [];
-
-  cart.forEach((item, index) => {
-    const rowData = [
-      index + 1,
-      item.name,
-      item.sku,
-      item.qty,
-      item.unit,
-      item.price.toLocaleString(),
-      (item.price * item.qty).toLocaleString()
-    ];
-    tableRows.push(rowData);
-  });
+  const tableColumn = [
+    "ลำดับ",
+    "สินค้า",
+    "SKU",
+    "จำนวน",
+    "หน่วย",
+    "ราคา/หน่วย",
+    "รวม",
+  ];
+  const tableRows = cart.map((item, index) => [
+    index + 1,
+    item.name,
+    item.sku,
+    item.qty,
+    item.unit,
+    item.price.toLocaleString(),
+    (item.qty * item.price).toLocaleString(),
+  ]);
 
   doc.autoTable({
     head: [tableColumn],
     body: tableRows,
     startY: 75,
-    styles: { font: "Sarabun", fontSize: 10, halign: "center" },
-    headStyles: { font: "Sarabun", fontStyle: "bold", fillColor: [220, 220, 220] },
+    styles: {
+      font: "Sarabun",
+      fontSize: 10,
+      halign: "center",
+    },
+    headStyles: {
+      font: "Sarabun",
+      fontStyle: "bold",
+      fillColor: [220, 220, 220],
+    },
     columnStyles: {
-      1: { halign: "left" }, // รายการสินค้า ชิดซ้าย
-    }
+      1: { halign: "left" }, // รายการสินค้าให้ชิดซ้าย
+    },
   });
 
   // ===== สรุปราคา =====
   let finalY = doc.lastAutoTable.finalY + 10;
   doc.setFontSize(12);
   doc.setFont("Sarabun", "normal");
-  doc.text("ราคารวม : __________________ บาท", 140, finalY);
+  doc.text(`ราคารวม : ${cartTotal.toLocaleString()} บาท`, 140, finalY);
   finalY += 6;
   doc.text("ภาษีมูลค่าเพิ่ม (7%) : __________________ บาท", 140, finalY);
   finalY += 6;
@@ -118,7 +128,6 @@ export default function App() {
   doc.setFontSize(11);
   doc.setFont("Sarabun", "bold");
   doc.text("เงื่อนไขการชำระเงิน", 14, finalY);
-
   finalY += 6;
   doc.setFont("Sarabun", "normal");
   doc.text("- การชำระเงิน : ________________________________", 20, finalY);
@@ -129,7 +138,6 @@ export default function App() {
   finalY += 20;
   doc.setFont("Sarabun", "bold");
   doc.text("ผู้เสนอราคา", 14, finalY);
-
   finalY += 10;
   doc.setFont("Sarabun", "normal");
   doc.text("ชื่อ-นามสกุล : __________________________", 20, finalY);
@@ -145,8 +153,6 @@ export default function App() {
   // ===== บันทึกไฟล์ =====
   doc.save("quotation.pdf");
 }
-
-
   
   function resetAdminForm() {
     setNewProduct({ name: '', category: '', sku: '', price: '', stock: '', unit: '', supplier: '' });
